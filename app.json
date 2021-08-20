@@ -1,7 +1,7 @@
 {
     "name": "rss-chan",
     "description": "A telegram RSS feed reader bot.",
-    "logo": "https://raw.githubusercontent.com/hyPnOtICDo0g/rss-chan/master/rss-chan.png",
+    "logo": "https://raw.githubusercontent.com/hyPnOtICDo0g/rss-chan/master/images/rss-chan.png",
     "keywords": [
       "bot",
       "telegram",
