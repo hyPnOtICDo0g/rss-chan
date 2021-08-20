@@ -1,71 +1,50 @@
-![RSSTT](https://github.com/BoKKeR/RSS-to-Telegram-Bot/raw/master/rsstt.png)
+<p align="center"><img src="https://raw.githubusercontent.com/hyPnOtICDo0g/rss-chan/master/images/rss-chan.png" width="300"></a></p> 
 
-# RSS to Telegram bot
+<h4 align="center">A telegram RSS feed reader bot, made in python using feedparser.</h4>
 
-A self-hosted telegram python bot that dumps posts from RSS feeds to a telegram chat. This script was created because all the third party services were unreliable.
+<p align="center">
+<a href="https://github.com/hyPnOtICDo0g/rss-chan/blob/master/LICENSE" alt="GitHub"><img src="https://img.shields.io/badge/License-GPLv3-blue.svg" ></a>
+<a alt="GitHub repo size"><img src="https://img.shields.io/github/repo-size/hyPnOtICDo0g/rss-chan"></a>
+<a href="https://github.com/hyPnOtICDo0g/rss-chan/stargazers" alt="GitHub stars"><img src="https://img.shields.io/github/stars/hyPnOtICDo0g/rss-chan?style=social" ></a>
+<a href="https://github.com/hyPnOtICDo0g/rss-chan/network/members" alt="GitHub forks"><img src="https://img.shields.io/github/forks/hyPnOtICDo0g/rss-chan?style=social" ></a>
+<hr>
 
-![Image of help menu](https://bokker.github.io/telegram.png)
 
-### Docker
+# About
 
-For the docker image go to: https://hub.docker.com/r/bokker/rss.to.telegram/
+A self-hosted telegram bot that dumps posts from RSS feeds to a telegram chat.  
 
-### Installation
+I decided to go with [BoKKeR](https://github.com/BoKKeR)'s repo as a base for my modifications, since he had already implemented the basic logic for parsing & sending feeds.
 
-Python 3.X
+The (heavily) modified code addresses a few issues in his repo with some new features of my own. Head over to the [changelog]() section for more.
 
-```sh
-pip install feedparser
-pip install python-telegram-bot
-```
+# Deploy
 
-A telegram bot is needed that the script will connect to. https://botsfortelegram.com/project/the-bot-father/
-Running the script and typing in /help will reveal the current chatId, this needs to be set also in the script
-
-1. Clone the script
-2. Replace your chatID and Token on the top of the script.
-3. Edit the delay. (seconds)
-4. Save and run
-5. Use the telegram commands to manage feeds
-
-Warning! Without chatID the bot wont be able to send automated messages and will only be able to respond to messages.
+Instructions to deploy the bot to **Heroku**/locally resides in the [wiki]().
 
 # Usage
 
-send /help to the bot to get this message:
+The bot uses a `Title <-> URL` mechanism so that the user doesn't have to mess with the feed **URL** every-time, instead use a **Title** to perform a task.
 
-> RSS to Telegram bot
->
-> After successfully adding a RSS link, the bot starts fetching the feed every 60 seconds. (This can be set)
-> Titles are used to easily manage RSS feeds and need to contain only one word
->
-> commands:
->
-> **/add** title http://www(.)URL(.)com
->
-> **/help** Shows this text
->
-> **/remove** !Title! removes the RSS link
->
-> **/list** Lists all the titles and the RSS links from the DB
->
-> **/test** Inbuilt command that fetches a post from Reddits RSS.
->
-> The current chatId is: 20416xxxx
+>**Commands**:  
+>• **/help**: To get the help message  
+• **/list**: List your subscriptions  
+• **/get** Title 10: Force fetch last n feed(s)  
+• **/sub** Title https://www.rss-url.com: Subscribe to a RSS feed  
+• **/unsub** Title: Removes the RSS subscription corresponding to it's title  
+• **/unsuball**: Removes all subscriptions  
 
-# Known issues
+# Credits
 
-If the bot is set to for example 5 minutes and one feed manages to get 2 new posts before the bot can check. Only the newest post will show up on telegram.
+Projects used in the making:
 
-# Docker
+* [feedparser](https://github.com/kurtmckee/feedparser)
+* [psycopg2](https://github.com/psycopg/psycopg2)
+* [python-dotenv](https://github.com/theskumar/python-dotenv)
+* [python-telegram-bot](https://github.com/python-telegram-bot/python-telegram-bot)
+* [RSS-to-Telegram-Bot](https://github.com/BoKKeR/RSS-to-Telegram-Bot)
 
-```
-docker create \
-  --name=rss.to.telegram \
-  -e DELAY=60 \
-  -e TOKEN=InsertToken \
-  -e CHATID=InsertChatID \
-  -v /path/to/host/config:/config \
-  --restart unless-stopped \
-  bokker/rss.to.telegram
-```
+Others:
+
+* Repo logo [Designed by mamewmy / Freepik](https://www.freepik.com/free-vector/young-girl-thinking-face-wondering-cartoon-illustration_11652601.htm)
+* RSS logo made by [Freepik](https://www.freepik.com) from [Flaticon](www.flaticon.com)
