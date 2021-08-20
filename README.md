@@ -47,4 +47,4 @@ Projects used in the making:
 Others:
 
 * Repo logo [Designed by mamewmy / Freepik](https://www.freepik.com/free-vector/young-girl-thinking-face-wondering-cartoon-illustration_11652601.htm)
-* RSS logo made by [Freepik](https://www.freepik.com) from [Flaticon](www.flaticon.com)
+* RSS logo made by [Freepik](https://www.freepik.com) from [Flaticon](https://www.flaticon.com/free-icon/rss_1051260)
