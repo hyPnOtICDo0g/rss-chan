@@ -16,11 +16,11 @@ A self-hosted telegram bot that dumps posts from RSS feeds to a telegram chat.
 
 I decided to go with [BoKKeR](https://github.com/BoKKeR)'s repo as a base for my modifications, since he had already implemented the basic logic for parsing & sending feeds.
 
-The (heavily) modified code addresses a few issues in his repo with some new features of my own. Head over to the [changelog]() section for more.
+The (heavily) modified code addresses a few issues in his repo with some new features of my own. Head over to the [changelog](https://github.com/hyPnOtICDo0g/rss-chan/wiki/Changelog) section for more.
 
 # Deploy
 
-Instructions to deploy the bot to **Heroku**/locally resides in the [wiki]().
+Instructions to deploy the bot to **Heroku**/locally resides in the [wiki](https://github.com/hyPnOtICDo0g/rss-chan/wiki).
 
 # Usage
 
