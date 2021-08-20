@@ -1,0 +1,49 @@
+{
+    "name": "rss-chan",
+    "description": "A telegram RSS feed reader bot.",
+    "logo": "https://raw.githubusercontent.com/hyPnOtICDo0g/rss-chan/master/images/rss-chan.png",
+    "keywords": [
+      "bot",
+      "telegram",
+      "python",
+      "rss",
+      "feeds"
+    ],
+    "repository": "https://github.com/hyPnOtICDo0g/rss-chan",
+    "stack": "container",
+    "env": {
+      "BOT_TOKEN": {
+        "description": "The Telegram bot token that you get from @BotFather.",
+        "required": true
+      },
+      "OWNER_ID": {
+        "description": "The Telegram User ID of the Bot Owner. Can be obtained from @MissRose_bot in DM by using the /info command.",
+        "required": true
+      },
+      "CHAT_ID": {
+        "description": "The id which you get from @MissRose_bot in a group by using /id command. (If you want the feeds in DM, fill this with the same value as OWNER_ID)",
+        "required": true
+      },
+      "DELAY": {
+        "description": "Feed delay set to 600s (10 mins) by default.",
+        "value": "600",
+        "required":false
+      },
+      "INIT_FEEDS": {
+        "description": "To prevent feed spam on redeploy.",
+        "value": "True",
+        "required": false
+      }
+    },
+    "addons": [
+      {
+        "plan": "heroku-postgresql"
+      }
+    ],
+    "formation": {
+            "worker": {
+                "quantity": 1,
+                "size": "free"
+            }
+      }
+}
