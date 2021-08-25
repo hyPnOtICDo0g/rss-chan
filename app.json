@@ -17,21 +17,25 @@
         "required": true
       },
       "OWNER_ID": {
-        "description": "The Telegram User ID of the Bot Owner. Can be obtained from @MissRose_bot in DM by using the /info command.",
+        "description": "The Telegram User ID of the Bot Owner.",
         "required": true
       },
       "CHAT_ID": {
-        "description": "The id which you get from @MissRose_bot in a group by using /id command. (If you want the feeds in DM, fill this with the same value as OWNER_ID)",
+        "description": "The chat ID where you want your feeds to be dumped.",
         "required": true
       },
       "DELAY": {
-        "description": "Feed delay set to 600s (10 mins) by default.",
+        "description": "The delay between each feed request. Set to 600s (10 mins) by default.",
         "value": "600",
-        "required":false
+        "required":true
       },
       "INIT_FEEDS": {
         "description": "To prevent feed spam on redeploy.",
         "value": "True",
+        "required": false
+      },
+      "CUSTOM_MESSAGES": {
+        "description": "To display a custom message at the top of every new feed.",
         "required": false
       }
     },

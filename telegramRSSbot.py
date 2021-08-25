@@ -40,13 +40,18 @@ try:
     CHAT_ID = getConfig('CHAT_ID')
     DELAY = int(getConfig('DELAY'))
     DATABASE_URL = getConfig('DATABASE_URL')
-    INIT_FEEDS = getConfig('INIT_FEEDS')
     if len(DATABASE_URL) == 0:
         raise KeyError
 except KeyError as e:
     LOGGER.error("One or more env variables missing! Exiting now.")
     exit(1)
-            
+try:
+    INIT_FEEDS = getConfig('INIT_FEEDS')    
+    CUSTOM_MESSAGES = getConfig('CUSTOM_MESSAGES')    
+except:
+    pass
+
+
 # Bot Commands
 
 bot = Bot(BOT_TOKEN)
@@ -253,7 +258,7 @@ def rss_monitor(context):
                 feed_urls.insert(0, rss_d.entries[feed_count]['link'])
                 feed_count += 1
             for x in range(len(feed_urls)):
-                feed_info = f"<b>{feed_titles[x]}</b>\n{feed_urls[x]}"
+                feed_info = f"{CUSTOM_MESSAGES}\n<b>{feed_titles[x]}</b>\n{feed_urls[x]}"
                 context.bot.send_message(CHAT_ID, feed_info, parse_mode='HTMl')
         # overwrite the existing feed with the latest feed
         postgres_update(str(rss_d.entries[0]['link']), name)
