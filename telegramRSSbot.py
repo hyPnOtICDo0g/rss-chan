@@ -58,7 +58,7 @@ bot = Bot(BOT_TOKEN)
 botcmds = [
         (f'help','To get this message'),
         (f'list','List your subscriptions'),
-        (f'get','Force fetch last n feed(s)'),
+        (f'get','Force fetch last n item(s)'),
         (f'sub','Subscribe to a RSS feed'),
         (f'unsub','Remove a specific subscription'),
         (f'unsuball','Remove all subscriptions')
@@ -70,7 +70,7 @@ def init_postgres():
     try:
         conn = psycopg2.connect(DATABASE_URL)
         c = conn.cursor()
-        c.execute("CREATE TABLE rss (name text, link text, last text)")
+        c.execute("CREATE TABLE rss (name text, link text, last text, title text)")
         conn.commit()
         conn.close()
         LOGGER.info("Database Created.")
@@ -86,20 +86,20 @@ def postgres_load_all():
     conn.close()
     return rows
 
-def postgres_write(name, link, last):
+def postgres_write(name, link, last, title):
     conn = psycopg2.connect(DATABASE_URL)
     c = conn.cursor()
-    q = [(name), (link), (last)]
-    c.execute("INSERT INTO rss (name, link, last) VALUES(%s, %s, %s)", q)
+    q = [(name), (link), (last), (title)]
+    c.execute("INSERT INTO rss (name, link, last, title) VALUES(%s, %s, %s, %s)", q)
     conn.commit()
     conn.close()
     rss_load()
 
-def postgres_update(last, name):
+def postgres_update(last, name, title):
     conn = psycopg2.connect(DATABASE_URL)
     c = conn.cursor()
-    q = [(last), (name)]
-    c.execute("UPDATE rss SET last=%s WHERE name=%s", q)
+    q = [(last), (title), (name)]
+    c.execute("UPDATE rss SET last=%s, title=%s WHERE name=%s", q)
     conn.commit()
     conn.close()
 
@@ -142,13 +142,13 @@ def rss_load():
         rss_dict.clear()
 
     for row in postgres_load_all():
-        rss_dict[row[0]] = (row[1], row[2])
+        rss_dict[row[0]] = (row[1], row[2], row[3])
 
 def cmd_rss_start(update, context):
     if owner_filter(update):
         update.effective_message.reply_text(f"Send me a link to a RSS feed.\nUse /help for further instructions.")
     else:
-        update.effective_message.reply_text("Oops! not a Authorized user.")
+        update.effective_message.reply_text("Oops! not an Authorized user.")
         LOGGER.info('UID: {} - UN: {} - MSG: {}'.format(update.message.chat.id, update.message.chat.username, update.message.text))
 
 def cmd_rsshelp(update, context):
@@ -156,7 +156,7 @@ def cmd_rsshelp(update, context):
 <b>Commands:</b> 
 • /help: <i>To get this message</i>
 • /list: <i>List your subscriptions</i>
-• /get Title 10: <i>Force fetch last n feed(s)</i>
+• /get Title 10: <i>Force fetch last n item(s)</i>
 • /sub Title https://www.rss-url.com: <i>Subscribe to a RSS feed</i>
 • /unsub Title: <i>Removes the RSS subscription corresponding to it's title</i>
 • /unsuball: <i>Removes all subscriptions</i>
@@ -188,7 +188,7 @@ def cmd_get(update, context):
                 update.effective_message.reply_text("Enter a value > 0.")
                 LOGGER.error("You trolling? Study Math doofus.")
             else:
-                msg = update.effective_message.reply_text(f"Getting the last <b>{count}</b> feed(s), please wait!", parse_mode='HTMl')
+                msg = update.effective_message.reply_text(f"Getting the last <b>{count}</b> items(s), please wait!", parse_mode='HTMl')
                 for num_feeds in range(feed_num):
                     rss_d = feedparser.parse(feedurl[0])
                     feedinfo +=f"<b>{rss_d.entries[num_feeds]['title']}</b>\n{rss_d.entries[num_feeds]['link']}\n\n"
@@ -211,7 +211,7 @@ def cmd_rss_sub(update, context):
             rss_d = feedparser.parse(context.args[1])
             rss_d.entries[0]['title']
             title_rss =  f"<b>{rss_d.feed.title}</b> latest record:\n<b>{rss_d.entries[0]['title']}</b>\n{rss_d.entries[0]['link']}"    
-            postgres_write(context.args[0], context.args[1], str(rss_d.entries[0]['link']))
+            postgres_write(context.args[0], context.args[1], str(rss_d.entries[0]['link']), str(rss_d.entries[0]['title']))
             addfeed = f"<b>Subscribed!</b>\nTitle: {context.args[0]}\nFeed: {context.args[1]}"
             update.effective_message.reply_text(addfeed, parse_mode='HTMl')
             update.effective_message.reply_text(title_rss, parse_mode='HTMl')
@@ -237,35 +237,41 @@ def init_feeds():
     if INIT_FEEDS == "True":
         for name, url_list in rss_dict.items():
             rss_d = feedparser.parse(url_list[0])
-            postgres_update(str(rss_d.entries[0]['link']), name)
+            postgres_update(str(rss_d.entries[0]['link']), name, str(rss_d.entries[0]['title']))
             LOGGER.info("Feed name: "+ name)
-            LOGGER.info("Latest feed url: "+ rss_d.entries[0]['link'])
+            LOGGER.info("Latest feed item: "+ rss_d.entries[0]['link'])
         rss_load()
         LOGGER.info('Initiated feeds.')
 
 def rss_monitor(context):
     feed_info = ""
     for name, url_list in rss_dict.items():
-        feed_count = 0
-        feed_titles = []
-        feed_urls = []
-        # check whether the latest feed's url is in the database
-        rss_d = feedparser.parse(url_list[0])
-        if (url_list[1] != rss_d.entries[0]['link']):
-            # check until a new feed pops up
-            while (url_list[1] != rss_d.entries[feed_count]['link']):
-                feed_titles.insert(0, rss_d.entries[feed_count]['title'])
-                feed_urls.insert(0, rss_d.entries[feed_count]['link'])
-                feed_count += 1
-            for x in range(len(feed_urls)):
-                feed_info = f"{CUSTOM_MESSAGES}\n<b>{feed_titles[x]}</b>\n{feed_urls[x]}"
-                context.bot.send_message(CHAT_ID, feed_info, parse_mode='HTMl')
-        # overwrite the existing feed with the latest feed
-        postgres_update(str(rss_d.entries[0]['link']), name)
-        LOGGER.info("Feed name: "+ name)
-        LOGGER.info("Latest feed url: "+ rss_d.entries[0]['link'])
+        try:
+            feed_count = 0
+            feed_titles = []
+            feed_urls = []
+            # check whether the URL & title of the latest item is in the database
+            rss_d = feedparser.parse(url_list[0])
+            if (url_list[1] != rss_d.entries[0]['link'] and url_list[2] != rss_d.entries[0]['title']):
+                # check until a new item pops up
+                while (url_list[1] != rss_d.entries[feed_count]['link'] and url_list[2] != rss_d.entries[feed_count]['title']):
+                    feed_titles.insert(0, rss_d.entries[feed_count]['title'])
+                    feed_urls.insert(0, rss_d.entries[feed_count]['link'])
+                    feed_count += 1
+                for x in range(len(feed_urls)):
+                    feed_info = f"{CUSTOM_MESSAGES}\n<b>{feed_titles[x]}</b>\n{feed_urls[x]}"
+                    context.bot.send_message(CHAT_ID, feed_info, parse_mode='HTMl')
+                # overwrite the existing item with the latest item
+                postgres_update(str(rss_d.entries[0]['link']), name, str(rss_d.entries[0]['title']))
+        except IndexError:
+            LOGGER.info(f"There was an error while parsing this feed: {url_list[0]}")
+            continue
+        else:
+            LOGGER.info("Feed name: "+ name)
+            LOGGER.info("Latest feed item: "+ rss_d.entries[0]['link'])
     rss_load()
     LOGGER.info('Database Loaded.')
+
 
 def main():
 
