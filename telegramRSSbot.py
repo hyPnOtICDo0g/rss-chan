@@ -132,7 +132,6 @@ def postgres_deleteall():
     conn.close()
     rss_dict.clear()
     LOGGER.info('Database deleted.')
-    
 
 # RSS
 
@@ -188,7 +187,7 @@ def cmd_get(update, context):
                 update.effective_message.reply_text("Enter a value > 0.")
                 LOGGER.error("You trolling? Study Math doofus.")
             else:
-                msg = update.effective_message.reply_text(f"Getting the last <b>{count}</b> items(s), please wait!", parse_mode='HTMl')
+                msg = update.effective_message.reply_text(f"Getting the last <b>{count}</b> item(s), please wait!", parse_mode='HTMl')
                 for num_feeds in range(feed_num):
                     rss_d = feedparser.parse(feedurl[0])
                     feedinfo +=f"<b>{rss_d.entries[num_feeds]['title']}</b>\n{rss_d.entries[num_feeds]['link']}\n\n"
@@ -236,10 +235,14 @@ def cmd_rss_unsuball(update, context):
 def init_feeds():
     if INIT_FEEDS == "True":
         for name, url_list in rss_dict.items():
-            rss_d = feedparser.parse(url_list[0])
-            postgres_update(str(rss_d.entries[0]['link']), name, str(rss_d.entries[0]['title']))
-            LOGGER.info("Feed name: "+ name)
-            LOGGER.info("Latest feed item: "+ rss_d.entries[0]['link'])
+            try:
+                rss_d = feedparser.parse(url_list[0])
+                postgres_update(str(rss_d.entries[0]['link']), name, str(rss_d.entries[0]['title']))
+                LOGGER.info("Feed name: "+ name)
+                LOGGER.info("Latest feed item: "+ rss_d.entries[0]['link'])
+            except IndexError:
+                LOGGER.info(f"There was an error while parsing this feed: {url_list[0]}")
+                continue                    
         rss_load()
         LOGGER.info('Initiated feeds.')
 
@@ -270,8 +273,7 @@ def rss_monitor(context):
             LOGGER.info("Feed name: "+ name)
             LOGGER.info("Latest feed item: "+ rss_d.entries[0]['link'])
     rss_load()
-    LOGGER.info('Database Loaded.')
-
+    LOGGER.info('Database Updated.')
 
 def main():
 
