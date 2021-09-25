@@ -29,11 +29,6 @@
         "value": "600",
         "required":true
       },
-      "INIT_FEEDS": {
-        "description": "To prevent feed spam on redeploy.",
-        "value": "True",
-        "required": false
-      },
       "CUSTOM_MESSAGES": {
         "description": "To display a custom message at the top of every new feed.",
         "required": false
