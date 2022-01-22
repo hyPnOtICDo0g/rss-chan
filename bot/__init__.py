@@ -1,7 +1,7 @@
 import os
 import logging
 from dotenv import load_dotenv
-from telegram.ext import Updater, CommandHandler, MessageFilter
+from telegram.ext import Updater, MessageFilter
 
 # Prevent unauthorised access to the bot
 class OwnerFilter(MessageFilter):
@@ -31,6 +31,6 @@ except KeyError as e:
 try:
     CUSTOM_MESSAGES = getConfig('CUSTOM_MESSAGES')
 except:
-    pass
+    CUSTOM_MESSAGES = ""
 
 updater = Updater(token=BOT_TOKEN, use_context=True)
