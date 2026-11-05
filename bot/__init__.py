@@ -30,7 +30,7 @@ except KeyError as e:
     exit(1)
 try:
     CUSTOM_MESSAGES = getConfig('CUSTOM_MESSAGES')
-except:
+except KeyError:
     CUSTOM_MESSAGES = ""
 
 updater = Updater(token=BOT_TOKEN, use_context=True)
